@@ -1,32 +1,54 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = "tharun2604/sample-project"
+        CONTAINER_NAME = "sample-app"
+    }
+
     stages {
         stage('Checkout') {
             steps {
-                echo 'Code is already checked out from GitHub'
-                sh 'ls'
+                echo "Code already checked out"
+                sh "ls"
             }
         }
 
-        stage('Build') {
+        stage('Setup Python') {
             steps {
-                echo 'Simulating build step'
-                sh 'echo Building project...'
+                sh """
+                python --version
+                python -m venv venv
+                . venv/bin/activate
+                pip install --upgrade pip
+                pip install -r requirements.txt
+                """
             }
         }
 
-        stage('Test') {
+        stage('Run Tests') {
             steps {
-                echo 'Simulating test step'
-                sh 'echo Running tests...'
+                sh """
+                . venv/bin/activate
+                pytest || true
+                """
             }
         }
 
-        stage('Deploy') {
+        stage('Build Docker Image') {
             steps {
-                echo 'Simulating deployment step'
-                sh 'echo Deploying application...'
+                sh """
+                docker build -t $IMAGE_NAME .
+                """
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                sh """
+                docker rm -f $CONTAINER_NAME || true
+                docker run -d -p 8000:8000 --name $CONTAINER_NAME $IMAGE_NAME
+                """
             }
         }
     }
