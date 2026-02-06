@@ -4,25 +4,29 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Code checked out automatically'
+                echo 'Code is already checked out from GitHub'
+                sh 'ls'
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Building application...'
+                echo 'Simulating build step'
+                sh 'echo Building project...'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running tests...'
+                echo 'Simulating test step'
+                sh 'echo Running tests...'
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying application...'
+                echo 'Simulating deployment step'
+                sh 'echo Deploying application...'
             }
         }
     }
